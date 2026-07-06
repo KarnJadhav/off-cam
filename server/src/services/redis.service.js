@@ -1,7 +1,7 @@
 import { redis } from '../config/redis.js';
 
 function isReady() {
-  return redis.status === 'ready';
+  return redis?.status === 'ready';
 }
 
 export async function getJson(key) {

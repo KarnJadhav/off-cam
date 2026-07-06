@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const jobSchema = new mongoose.Schema(
   {
     company: { type: String, required: true, trim: true },
+    companyLogo: { type: String, trim: true },
     role: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
     salary: { type: String, trim: true },
@@ -12,9 +13,11 @@ const jobSchema = new mongoose.Schema(
     deadline: Date,
     applyLink: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
+    eligibility: { type: String, trim: true },
     tags: [{ type: String, trim: true }],
     jobType: { type: String, enum: ['Full-time', 'Internship'], default: 'Full-time' },
     workMode: { type: String, enum: ['Remote', 'Hybrid', 'On-site'], default: 'On-site' },
+    status: { type: String, enum: ['draft', 'published', 'expired'], default: 'published' },
     isPremium: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }

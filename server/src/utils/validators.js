@@ -25,6 +25,7 @@ export const loginSchema = z.object({
 
 export const jobSchema = z.object({
   company: z.string().min(1),
+  companyLogo: z.string().url().optional().or(z.literal('')),
   role: z.string().min(1),
   location: z.string().min(1),
   salary: z.string().optional(),
@@ -34,9 +35,11 @@ export const jobSchema = z.object({
   deadline: z.string().datetime().optional().or(z.literal('')),
   applyLink: z.string().url(),
   description: z.string().min(10),
+  eligibility: z.string().optional(),
   tags: z.array(z.string()).default([]),
   jobType: z.enum(['Full-time', 'Internship']).default('Full-time'),
   workMode: z.enum(['Remote', 'Hybrid', 'On-site']).default('On-site'),
+  status: z.enum(['draft', 'published', 'expired']).default('published'),
   isPremium: z.boolean().default(false),
   isActive: z.boolean().default(true)
 });

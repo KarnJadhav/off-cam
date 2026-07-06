@@ -1,21 +1,35 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+  BarChart3,
+  Bell,
   BriefcaseBusiness,
   CalendarClock,
   Check,
+  ClipboardList,
+  Copy,
+  CreditCard,
   Crown,
+  Edit,
+  FileText,
   Filter,
   GraduationCap,
+  Home,
   IndianRupee,
   Lock,
   LogOut,
   MapPin,
+  MessageSquare,
   Plus,
+  RefreshCw,
   Search,
   Send,
+  Settings,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Trash2,
+  UserCog,
+  Users
 } from 'lucide-react';
 import './styles.css';
 
@@ -63,6 +77,7 @@ function App() {
   const [telegramGroup, setTelegramGroup] = useState('');
   const [filters, setFilters] = useState({ q: '', batch: '', branch: '', jobType: '', workMode: '' });
   const [jobForm, setJobForm] = useState(emptyJob);
+  const [adminSection, setAdminSection] = useState('overview');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 

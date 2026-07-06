@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema(
     subscriptionPlan: { type: String, enum: ['none', 'quarterly'], default: 'none' },
     subscriptionExpiry: Date,
     preferences: { type: preferenceSchema, default: () => ({}) },
-    isEmailVerified: { type: Boolean, default: false }
+    isEmailVerified: { type: Boolean, default: false },
+    isBlocked: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
