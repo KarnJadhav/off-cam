@@ -15,6 +15,7 @@ export async function requireAuth(req, res, next) {
 
     const user = await User.findById(payload.sub);
     if (!user) return res.status(401).json({ message: 'User not found' });
+    if (user.isBlocked) return res.status(403).json({ message: 'Your account has been blocked' });
 
     req.user = user;
     req.token = token;

@@ -3,14 +3,7 @@ import { Payment } from '../models/Payment.js';
 import { User } from '../models/User.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { jobSchema } from '../utils/validators.js';
-import { clearByPattern } from '../services/redis.service.js';
-
-function normalizeJob(data) {
-  return {
-    ...data,
-    deadline: data.deadline ? new Date(data.deadline) : undefined
-  };
-}
+import { createJobFromSource, deleteJobByAdmin, duplicateJobByAdmin, updateJobByAdmin } from '../services/job.service.js';
 
 function startOfToday() {
   const today = new Date();
@@ -24,6 +17,7 @@ function addDays(days) {
 
 export const overview = asyncHandler(async (_req, res) => {
   const today = startOfToday();
+  const thirtyDaysAgo = addDays(-30);
   const [
     totalUsers,
     premiumUsers,
@@ -33,19 +27,27 @@ export const overview = asyncHandler(async (_req, res) => {
     todaysPayments,
     jobsPostedToday,
     expiringPlans,
+    publishedJobs,
+    draftJobs,
+    expiredJobs,
     recentPayments,
-    recentUsers
+    recentUsers,
+    recentJobs
   ] = await Promise.all([
     User.countDocuments(),
     User.countDocuments({ isPremium: true, subscriptionExpiry: { $gt: new Date() } }),
-    Job.countDocuments({ isActive: true, status: 'published' }),
+    Job.countDocuments({ isActive: true, isDeleted: false, status: 'published' }),
     Payment.aggregate([{ $match: { status: 'paid' } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),
     User.countDocuments({ createdAt: { $gte: today } }),
     Payment.countDocuments({ status: 'paid', paidAt: { $gte: today } }),
     Job.countDocuments({ createdAt: { $gte: today } }),
     User.countDocuments({ isPremium: true, subscriptionExpiry: { $gte: new Date(), $lte: addDays(7) } }),
+    Job.countDocuments({ isDeleted: false, status: 'published' }),
+    Job.countDocuments({ isDeleted: false, status: 'draft' }),
+    Job.countDocuments({ isDeleted: false, status: 'expired' }),
     Payment.find({ status: 'paid' }).sort({ paidAt: -1 }).limit(8).populate('userId', 'name email').lean(),
-    User.find().sort({ createdAt: -1 }).limit(8).select('name email isPremium createdAt').lean()
+    User.find({ createdAt: { $gte: thirtyDaysAgo } }).sort({ createdAt: -1 }).limit(30).select('name email isPremium createdAt').lean(),
+    Job.find({ createdAt: { $gte: thirtyDaysAgo } }).sort({ createdAt: -1 }).limit(30).select('company role createdAt').lean()
   ]);
 
   res.json({
@@ -57,7 +59,10 @@ export const overview = asyncHandler(async (_req, res) => {
       todaysSignups,
       todaysPayments,
       jobsPostedToday,
-      expiringPlans
+      expiringPlans,
+      publishedJobs,
+      draftJobs,
+      expiredJobs
     },
     charts: {
       revenue: recentPayments.map((payment) => ({
@@ -67,53 +72,48 @@ export const overview = asyncHandler(async (_req, res) => {
       registrations: recentUsers.map((user) => ({
         label: new Date(user.createdAt).toLocaleDateString('en-IN'),
         value: 1
+      })),
+      premiumGrowth: recentUsers
+        .filter((user) => user.isPremium)
+        .map((user) => ({
+          label: new Date(user.createdAt).toLocaleDateString('en-IN'),
+          value: 1
+        })),
+      jobsPosted: recentJobs.map((job) => ({
+        label: new Date(job.createdAt).toLocaleDateString('en-IN'),
+        value: 1
       }))
     }
   });
 });
 
 export const listJobsAdmin = asyncHandler(async (req, res) => {
-  const filters = {};
+  const filters = { isDeleted: false };
   if (req.query.status) filters.status = req.query.status;
   if (req.query.q) filters.$text = { $search: req.query.q };
-  const jobs = await Job.find(filters).sort({ createdAt: -1 }).limit(200).lean();
+  const jobs = await Job.find(filters).sort({ createdAt: -1 }).limit(200).populate('postedBy', 'name email').lean();
   res.json({ jobs });
 });
 
 export const createJob = asyncHandler(async (req, res) => {
-  const data = normalizeJob(jobSchema.parse(req.body));
-  const job = await Job.create({ ...data, postedBy: req.user._id });
-  await clearByPattern('jobs:*');
-  res.status(201).json({ job });
+  const data = jobSchema.parse(req.body);
+  const { job, notifications } = await createJobFromSource(data, req.user._id, data.source || 'dashboard');
+  res.status(201).json({ job, notifications });
 });
 
 export const updateJob = asyncHandler(async (req, res) => {
-  const data = normalizeJob(jobSchema.partial().parse(req.body));
-  const job = await Job.findByIdAndUpdate(req.params.id, data, { new: true });
-  if (!job) return res.status(404).json({ message: 'Job not found' });
-  await clearByPattern('jobs:*');
-  res.json({ job });
+  const data = jobSchema.partial().parse(req.body);
+  const { job, notifications } = await updateJobByAdmin(req.params.id, data);
+  res.json({ job, notifications });
 });
 
 export const deleteJob = asyncHandler(async (req, res) => {
-  const job = await Job.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
-  if (!job) return res.status(404).json({ message: 'Job not found' });
-  await clearByPattern('jobs:*');
-  res.json({ message: 'Job deactivated' });
+  await deleteJobByAdmin(req.params.id);
+  res.json({ message: 'Job soft deleted' });
 });
 
 export const duplicateJob = asyncHandler(async (req, res) => {
-  const job = await Job.findById(req.params.id).lean();
-  if (!job) return res.status(404).json({ message: 'Job not found' });
-  const { _id, createdAt, updatedAt, ...data } = job;
-  const copy = await Job.create({
-    ...data,
-    role: `${data.role} Copy`,
-    status: 'draft',
-    isActive: true,
-    postedBy: req.user._id
-  });
-  await clearByPattern('jobs:*');
+  const copy = await duplicateJobByAdmin(req.params.id, req.user._id);
   res.status(201).json({ job: copy });
 });
 
