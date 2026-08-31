@@ -39,6 +39,9 @@ export const login = asyncHandler(async (req, res) => {
   if (!user || !(await user.comparePassword(data.password))) {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
+  if (user.isBlocked) {
+    return res.status(403).json({ message: 'Your account has been blocked. Contact support.' });
+  }
 
   sendToken(res, user);
 });

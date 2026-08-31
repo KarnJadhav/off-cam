@@ -3,7 +3,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { getJson, setJson } from '../services/redis.service.js';
 
 function buildFilters(query, premiumOnly = false) {
-  const filters = { isActive: true };
+  const filters = { isActive: true, isDeleted: false, status: 'published' };
   if (premiumOnly) filters.isPremium = true;
   if (query.batch) filters.batch = query.batch;
   if (query.branch) filters.branch = query.branch;

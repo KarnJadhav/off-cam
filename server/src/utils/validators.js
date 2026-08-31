@@ -13,6 +13,7 @@ export const registerSchema = z.object({
       locations: z.array(z.string()).optional(),
       experience: z.string().optional(),
       jobType: z.string().optional(),
+      remote: z.boolean().optional(),
       workMode: z.string().optional()
     })
     .optional()
@@ -28,18 +29,24 @@ export const jobSchema = z.object({
   companyLogo: z.string().url().optional().or(z.literal('')),
   role: z.string().min(1),
   location: z.string().min(1),
-  salary: z.string().optional(),
+  salary: z.string().min(1),
   batch: z.array(z.string()).default([]),
   branch: z.array(z.string()).default([]),
-  experience: z.string().default('Fresher'),
+  experience: z.string().min(1).default('Freshers'),
   deadline: z.string().datetime().optional().or(z.literal('')),
+  expiryDate: z.string().datetime().optional().or(z.literal('')),
   applyLink: z.string().url(),
   description: z.string().min(10),
   eligibility: z.string().optional(),
+  skills: z.array(z.string()).default([]),
+  selectionProcess: z.string().optional(),
   tags: z.array(z.string()).default([]),
-  jobType: z.enum(['Full-time', 'Internship']).default('Full-time'),
+  jobType: z.enum(['Full Time', 'Internship', 'Internship + PPO']).default('Full Time'),
+  remote: z.boolean().default(false),
   workMode: z.enum(['Remote', 'Hybrid', 'On-site']).default('On-site'),
   status: z.enum(['draft', 'published', 'expired']).default('published'),
+  source: z.enum(['dashboard', 'telegram']).default('dashboard'),
   isPremium: z.boolean().default(false),
-  isActive: z.boolean().default(true)
+  isActive: z.boolean().default(true),
+  isDeleted: z.boolean().default(false)
 });

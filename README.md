@@ -1,38 +1,25 @@
-<<<<<<< HEAD
 # Off-Cam
 
-MVP for an off-campus jobs platform. The frontend and backend are separate projects:
+Off-Cam is a full-stack MERN SaaS platform that helps students discover off-campus job opportunities with premium subscriptions, Razorpay payments, optional Redis caching, JWT authentication, and an admin dashboard for managing jobs, users, subscriptions, payments, notifications, reports, and settings.
+
+The frontend and backend are separate projects:
 
 - `client/`: React + Vite dashboard
 - `server/`: Express + MongoDB + Redis + Razorpay API
 
-## Setup
-
-### Backend
+## Backend
 
 ```bash
 cd server
 npm install
 copy .env.example .env
-```
-
-Fill MongoDB, Redis, JWT, Razorpay, email, Telegram, and admin values in `server/.env`.
-
-Create the first admin:
-
-```bash
 npm run seed:admin
-```
-
-Run the API:
-
-```bash
 npm run dev
 ```
 
 Server: `http://localhost:5000`
 
-### Frontend
+## Frontend
 
 Open a new terminal:
 
@@ -43,29 +30,42 @@ copy .env.example .env
 npm run dev
 ```
 
-Set `VITE_RAZORPAY_KEY_ID` in `client/.env` to the same Razorpay test key id used by the backend. The backend still returns the key id with the order response, but the frontend env value is preferred for checkout.
-
 Client: `http://localhost:5173`
 
-## Default API Surface
+Set `VITE_RAZORPAY_KEY_ID` in `client/.env` to the same Razorpay test key id used by the backend.
+
+## Main API Surface
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
-- `POST /api/auth/verify-otp`
 - `GET /api/jobs`
-- `GET /api/jobs/:id`
-- `GET /api/jobs/search`
 - `GET /api/premium/jobs`
 - `POST /api/payment/create-order`
 - `POST /api/payment/verify`
 - `GET /api/payment/history`
 - `POST /api/payment/webhook`
-- `POST /api/admin/job`
-- `PUT /api/admin/job/:id`
-- `DELETE /api/admin/job/:id`
+- `GET /api/admin/overview`
+- `GET /api/admin/jobs`
+- `POST /api/admin/jobs`
+- `PATCH /api/admin/jobs/:id`
+- `DELETE /api/admin/jobs/:id`
+- `POST /api/admin/jobs/:id/duplicate`
 - `GET /api/admin/users`
-=======
-# off-cam
-Off-Cam is a full-stack MERN SaaS platform that helps students discover off-campus job opportunities with premium subscriptions, Razorpay payments, Redis caching, JWT authentication, and an admin dashboard for managing job postings.
->>>>>>> ccb8e16f93e751eab805078185f3664aced245a3
+- `PUT /api/admin/users/:id`
+- `DELETE /api/admin/users/:id`
+- `GET /api/admin/premium-users`
+- `GET /api/admin/payments`
+- `POST /api/admin/notifications`
+- `GET /api/admin/settings`
+
+## Admin Job Workflow
+
+Jobs are added manually in v1. The admin dashboard saves jobs through the shared job service, which handles validation, duplicate apply-link checks, MongoDB save/update, Redis cache clearing, and background premium-user notification triggers.
+
+Published jobs can use both:
+
+- `deadline`: application deadline shown to students
+- `expiryDate`: date after which the job should be hidden/expired
+
+A midnight cron task automatically marks published jobs as expired when `expiryDate` is in the past.

@@ -165,7 +165,8 @@ button {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   min-height: 46px;
   border: 1px solid #d7ded8;
@@ -182,7 +183,8 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   border-color: #0f766e;
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
 }
@@ -255,19 +257,24 @@ textarea:focus {
   margin-top: 34px;
 }
 
-.sidebar a {
+.sidebar a,
+.sidebar nav button {
   display: flex;
   align-items: center;
   gap: 10px;
   min-height: 42px;
   border-radius: 8px;
+  border: 0;
   padding: 0 12px;
   color: #bcd2ca;
+  background: transparent;
   text-decoration: none;
   font-weight: 700;
+  text-align: left;
 }
 
-.sidebar a.active {
+.sidebar a.active,
+.sidebar nav button.active {
   color: #ffffff;
   background: #1f4942;
 }
@@ -531,6 +538,318 @@ textarea:focus {
   min-height: 18px;
 }
 
+.admin-shell {
+  grid-template-columns: 280px minmax(0, 1fr);
+  background: #f6f8f6;
+}
+
+.admin-sidebar {
+  background: #13211f;
+}
+
+.admin-sidebar nav {
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.admin-workspace {
+  max-width: 1500px;
+  width: 100%;
+}
+
+.admin-topbar h1 {
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.admin-stat-grid.small .admin-stat {
+  min-height: 104px;
+}
+
+.admin-stat {
+  display: grid;
+  align-content: space-between;
+  gap: 14px;
+  min-height: 132px;
+  border: 1px solid #dbe4de;
+  border-radius: 8px;
+  padding: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(30, 47, 44, 0.06);
+}
+
+.admin-stat svg {
+  width: 22px;
+  height: 22px;
+  color: #0f766e;
+}
+
+.admin-stat span {
+  color: #60736b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-stat strong {
+  color: #17211f;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1;
+}
+
+.admin-grid-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.admin-panel h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+}
+
+.admin-filters {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 180px;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.search-box.full {
+  margin-bottom: 14px;
+}
+
+.admin-job-form {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.notification-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 14px;
+}
+
+.notification-form .textarea-label {
+  grid-column: 1 / -1;
+}
+
+.delivery-row,
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid #dbe4de;
+  border-radius: 8px;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+.admin-table th,
+.admin-table td {
+  border-bottom: 1px solid #e5ece7;
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-table th {
+  color: #52635d;
+  background: #f4f7f5;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.admin-table td {
+  color: #22302d;
+  font-size: 14px;
+}
+
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 260px;
+}
+
+.action-group button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  border: 1px solid #d6e0da;
+  border-radius: 6px;
+  padding: 0 9px;
+  color: #24413c;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.action-group button svg {
+  width: 13px;
+  height: 13px;
+}
+
+.action-group .danger {
+  color: #8f1d1d;
+  border-color: #f0caca;
+  background: #fff5f5;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  border-radius: 999px;
+  padding: 0 9px;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: capitalize;
+}
+
+.badge.green {
+  color: #0f4c45;
+  background: #dff5ed;
+}
+
+.badge.yellow {
+  color: #6d4b0d;
+  background: #fff2ce;
+}
+
+.badge.red {
+  color: #8f1d1d;
+  background: #ffe1e1;
+}
+
+.badge.gray {
+  color: #4f5f59;
+  background: #edf1ee;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 160px;
+  padding-top: 10px;
+}
+
+.bar-item {
+  display: grid;
+  justify-items: center;
+  align-items: end;
+  gap: 6px;
+  min-width: 28px;
+  flex: 1;
+}
+
+.bar-item span {
+  width: 100%;
+  max-width: 34px;
+  border-radius: 6px 6px 0 0;
+  background: #0f766e;
+}
+
+.bar-item small {
+  max-width: 56px;
+  overflow: hidden;
+  color: #63746d;
+  font-size: 11px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-row,
+.rank-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e5ece7;
+  padding: 11px 0;
+}
+
+.info-row span,
+.rank-list span,
+.muted {
+  color: #60736b;
+}
+
+.info-row strong,
+.rank-list strong {
+  color: #17211f;
+  text-align: right;
+}
+
+.rank-list,
+.plain-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plain-list {
+  display: grid;
+  gap: 10px;
+}
+
+.plain-list li {
+  border: 1px solid #e1e8e3;
+  border-radius: 8px;
+  padding: 11px;
+  background: #f8faf8;
+  font-weight: 800;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.report-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #dbe4de;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.report-card svg {
+  width: 24px;
+  height: 24px;
+  color: #0f766e;
+}
+
+.report-card h3,
+.report-card p {
+  margin: 0;
+}
+
+.report-card p {
+  color: #60736b;
+  font-weight: 700;
+}
+
 @media (max-width: 940px) {
   .auth-shell,
   .app-shell {
@@ -555,7 +874,9 @@ textarea:focus {
   }
 
   .controls,
-  .job-form {
+  .job-form,
+  .admin-stat-grid,
+  .admin-grid-two {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -570,7 +891,11 @@ textarea:focus {
   .metric-grid,
   .two-col,
   .controls,
-  .job-form {
+  .job-form,
+  .admin-stat-grid,
+  .admin-grid-two,
+  .admin-filters,
+  .notification-form {
     grid-template-columns: 1fr;
   }
 

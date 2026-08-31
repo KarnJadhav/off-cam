@@ -13,6 +13,7 @@ import authRoutes from './routes/auth.routes.js';
 import jobsRoutes from './routes/jobs.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
 import premiumRoutes from './routes/premium.routes.js';
+import { startJobExpiryCron } from './services/jobExpiry.cron.js';
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use(errorHandler);
 async function start() {
   await connectDb();
   await connectRedis();
+  startJobExpiryCron();
   app.listen(port, () => {
     console.log(`Off-Cam API running on http://localhost:${port}`);
   });
