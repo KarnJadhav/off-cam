@@ -66,6 +66,6 @@ Jobs are added manually in v1. The admin dashboard saves jobs through the shared
 Published jobs can use both:
 
 - `deadline`: application deadline shown to students
-- `expiryDate`: date after which the job should be hidden/expired
+- `expiryDate`: date after which the job should be hidden
 
 A midnight cron task automatically marks published jobs as expired when `expiryDate` is in the past.
